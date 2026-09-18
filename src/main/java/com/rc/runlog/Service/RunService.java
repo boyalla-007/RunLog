@@ -1,5 +1,9 @@
 package com.rc.runlog.Service;
 
+import com.rc.runlog.Repository.UserRepository;
+import com.rc.runlog.model.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.rc.runlog.Dto.RunRequest;
 import com.rc.runlog.Dto.RunResponse;
 import com.rc.runlog.Repository.RunRepository;
@@ -14,12 +18,19 @@ import java.util.Optional;
 @Service
 public class RunService {
     private final RunRepository runRepository;
-    public RunService(RunRepository runRepo){
+    private final UserRepository userRepository;
+    public RunService(RunRepository runRepo,UserRepository userRepo){
         this.runRepository = runRepo;
+        this.userRepository = userRepo;
     }
 
     public RunResponse saveRun(RunRequest request){
         Run run = new Run();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                        .orElseThrow(()->new RunNotFoundException("User Not Found!"));
+        run.setUserId(user.getId());
 
         run.setDate(request.getDate());
         run.setDistance(request.getDistance());
@@ -33,25 +44,43 @@ public class RunService {
         return convertToResponse(savedRun);
     }
     public List<RunResponse> getAllRuns(){
-        return runRepository.findAll()
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new RunNotFoundException("User Not Found"));
+        return runRepository.findByUserId(user.getId())
                 .stream()
                 .map(this::convertToResponse)
                 .toList();
     }
     public RunResponse getRunById(ObjectId id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("User Not Found"));
         Run run = runRepository.findById(id)
                 .orElseThrow(()->
                         new RunNotFoundException("Run not found"));
-
+        if(!run.getUserId().equals(user.getId())){
+            throw  new RunNotFoundException("Run Not Found");
+        }
         return convertToResponse(run);
     }
 
     public RunResponse updateRun(
             ObjectId id,RunRequest request
     ){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new RuntimeException("User Not Found"));
        Run run = runRepository.findById(id)
                .orElseThrow(()->
         new RunNotFoundException("Run not found"));
+       if(!run.getUserId().equals(user.getId())){
+           throw new RunNotFoundException("Run Not Found");
+       }
             run.setDate(request.getDate());
             run.setDistance(request.getDistance());
             run.setDuration(request.getDuration());
@@ -62,12 +91,19 @@ public class RunService {
             Run updatedRun = runRepository.save(run);
 
             return convertToResponse(updatedRun);
-
-
     }
     public void deleteRun(ObjectId id){
-        runRepository.deleteById(id
-        );
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                        .orElseThrow(()->new RuntimeException("User Not Found"));
+        Run run = runRepository.findById(id)
+                .orElseThrow(()->
+                        new RunNotFoundException("Run Not Found"));
+        if(!user.getId().equals(run.getUserId())){
+            throw new RunNotFoundException("Run Not Found");
+        }
+        runRepository.delete(run);
     }
     private RunResponse convertToResponse(Run run){
         return new RunResponse(

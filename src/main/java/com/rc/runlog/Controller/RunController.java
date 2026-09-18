@@ -36,7 +36,7 @@ public class RunController {
         return runService.updateRun(Id,request);
     }
     @DeleteMapping("/{id}")
-    public void deleteRun(@PathVariable ObjectId Id){
-        runService.deleteRun(Id);
+    public void deleteRun(@PathVariable("id") ObjectId id){
+        runService.deleteRun(id);
     }
 }
