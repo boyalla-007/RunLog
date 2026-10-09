@@ -1,5 +1,6 @@
 package com.rc.runlog.Service;
 
+import com.rc.runlog.Dto.RunStatsResponse;
 import com.rc.runlog.Repository.UserRepository;
 import com.rc.runlog.model.User;
 import org.springframework.security.core.Authentication;
@@ -11,9 +12,12 @@ import com.rc.runlog.exception.RunNotFoundException;
 import com.rc.runlog.model.Run;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import com.rc.runlog.Dto.RunStatsResponse;
 
 @Service
 public class RunService {
@@ -23,13 +27,19 @@ public class RunService {
         this.runRepository = runRepo;
         this.userRepository = userRepo;
     }
+    private User getCurrentUser() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
 
+        String username = authentication.getName();
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("User Not Found"));
+    }
     public RunResponse saveRun(RunRequest request){
         Run run = new Run();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                        .orElseThrow(()->new RunNotFoundException("User Not Found!"));
+        User user = getCurrentUser();
         run.setUserId(user.getId());
 
         run.setDate(request.getDate());
@@ -43,44 +53,21 @@ public class RunService {
         Run savedRun = runRepository.save(run);
         return convertToResponse(savedRun);
     }
-    public List<RunResponse> getAllRuns(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()->new RunNotFoundException("User Not Found"));
-        return runRepository.findByUserId(user.getId())
-                .stream()
-                .map(this::convertToResponse)
-                .toList();
-    }
     public RunResponse getRunById(ObjectId id){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()-> new RuntimeException("User Not Found"));
-        Run run = runRepository.findById(id)
+        User user = getCurrentUser();
+        Run run = runRepository.findByIdAndUserId(id,user.getId())
                 .orElseThrow(()->
                         new RunNotFoundException("Run not found"));
-        if(!run.getUserId().equals(user.getId())){
-            throw  new RunNotFoundException("Run Not Found");
-        }
         return convertToResponse(run);
     }
 
     public RunResponse updateRun(
             ObjectId id,RunRequest request
     ){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()->new RuntimeException("User Not Found"));
-       Run run = runRepository.findById(id)
+        User user = getCurrentUser();
+       Run run = runRepository.findByIdAndUserId(id,user.getId())
                .orElseThrow(()->
         new RunNotFoundException("Run not found"));
-       if(!run.getUserId().equals(user.getId())){
-           throw new RunNotFoundException("Run Not Found");
-       }
             run.setDate(request.getDate());
             run.setDistance(request.getDistance());
             run.setDuration(request.getDuration());
@@ -93,16 +80,10 @@ public class RunService {
             return convertToResponse(updatedRun);
     }
     public void deleteRun(ObjectId id){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                        .orElseThrow(()->new RuntimeException("User Not Found"));
-        Run run = runRepository.findById(id)
+        User user = getCurrentUser();
+        Run run = runRepository.findByIdAndUserId(id,user.getId())
                 .orElseThrow(()->
                         new RunNotFoundException("Run Not Found"));
-        if(!user.getId().equals(run.getUserId())){
-            throw new RunNotFoundException("Run Not Found");
-        }
         runRepository.delete(run);
     }
     private RunResponse convertToResponse(Run run){
@@ -114,5 +95,72 @@ public class RunService {
                 run.getPace(),
                 run.getNotes()
         );
+    }
+    public Page<RunResponse> getRuns(
+            LocalDate from,
+            LocalDate to,
+            int page,
+            int size
+    ){
+        User user = getCurrentUser();
+
+        Pageable pageable = PageRequest.of(page,size);
+        if(from != null && to != null){
+            return runRepository
+                    .findByUserIdAndDateBetween(user.getId(), from, to,pageable)
+                    .map(this::convertToResponse);
+        }
+    else if(from!=null){
+            return runRepository
+                    .findByUserIdAndDateGreaterThanEqualOrderByDateDesc(user.getId(),from,pageable)
+                    .map(this::convertToResponse);
+        }
+        else if(to!=null){
+            return runRepository
+                    .findByUserIdAndDateLessThanEqualOrderByDateDesc(user.getId(),to,pageable)
+                    .map(this::convertToResponse);
+        }
+        return runRepository
+                .findByUserIdOrderByDateDesc(user.getId(),pageable)
+                .map(this::convertToResponse);
+    }
+
+    public RunStatsResponse getRunStats(){
+        User user = getCurrentUser();
+
+        List<Run> runs = runRepository.findByUserId(user.getId());
+
+        long totalRuns = runs.size();
+        double totalDistance = runs.stream()
+                .mapToDouble(Run::getDistance)
+                .sum();
+        double averagePace = totalRuns==0?0:
+                Math.round(
+                runs.stream()
+                .mapToDouble(Run::getPace)
+                .average()
+                .orElse(0)*100)/100;
+
+        double averageDistance = totalRuns ==0?0:
+                Math.round(
+                runs.stream()
+                .mapToDouble(Run::getPace)
+                .average()
+                .orElse(0)*100)/100;
+
+        return new RunStatsResponse(
+                totalRuns,
+                totalDistance,
+                averageDistance,
+                averagePace
+        );
+    }
+    public RunResponse getLongestRun(){
+        User user = getCurrentUser();
+        Run run = runRepository
+                .findTopByUserIdOrderByDistanceDesc(user.getId())
+                .orElseThrow(()->
+                        new RunNotFoundException("No runs found"));
+        return convertToResponse(run);
     }
 }
