@@ -1,5 +1,6 @@
 package com.rc.runlog;
 
+import com.rc.runlog.Dto.RunRequest;
 import com.rc.runlog.Dto.RunResponse;
 import com.rc.runlog.Repository.RunRepository;
 import com.rc.runlog.Repository.UserRepository;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -78,7 +80,7 @@ public class RunServiceTest {
         SecurityContextHolder.clearContext();
     }
     @Test
-    void getRunById_shouldThrowException_whenRunDoesnNotExist(){
+    void getRunById_shouldThrowException_whenRunDoesNotExist(){
 
         ObjectId userId = new ObjectId();
         ObjectId runId = new ObjectId();
@@ -94,5 +96,31 @@ public class RunServiceTest {
                 RunNotFoundException.class,
                 ()->runService.getRunById(runId)
         );
+    }
+    @Test
+    void saveRun_shouldSaveRunAndReturnResponse(){
+
+        ObjectId userId = new ObjectId();
+
+        User user= new User();
+        user.setId(userId);
+        when(userRepository.findByUsername("rahul"))
+                .thenReturn(Optional.of(user));
+
+        RunRequest request = new RunRequest();
+        request.setDistance(5.0);
+        request.setDuration(30);
+
+        when(runRepository.save(any(Run.class)))
+                .thenAnswer(invocation -> {
+                    Run run = invocation.getArgument(0);
+                    run.setId(new ObjectId());
+                    return run;
+                });
+        RunResponse response = runService.saveRun(request);
+
+        assertEquals(5.0,request.getDistance());
+        assertEquals(30,response.getDuration());
+        assertEquals(6.0,response.getPace());
     }
 }
