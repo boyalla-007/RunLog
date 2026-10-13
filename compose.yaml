@@ -1,0 +1,8 @@
+services:
+  runlog:
+    build: .
+    container_name: runlog-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_MONGODB_HOST: host.docker.internal
