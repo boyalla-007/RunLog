@@ -5,4 +5,17 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_MONGODB_HOST: host.docker.internal
+      SPRING_MONGODB_HOST: mongodb
+      SPRING_MONGODB_PORT: 27017
+      SPRING_MONGODB_DATABASE: runlog
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:9.0
+    container_name: runlog-mongodb
+    volumes:
+      - runlog-data:/data/db
+
+volumes:
+  runlog-data:
