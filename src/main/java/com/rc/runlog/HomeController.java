@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(){
-        return "RunLog APi is running!!";
+        return "RunLog is Up and running!!";
     }
 }
