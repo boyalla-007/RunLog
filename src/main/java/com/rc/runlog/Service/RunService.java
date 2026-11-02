@@ -144,7 +144,7 @@ public class RunService {
         double averageDistance = totalRuns ==0?0:
                 Math.round(
                 runs.stream()
-                .mapToDouble(Run::getPace)
+                .mapToDouble(Run::getDistance)
                 .average()
                 .orElse(0)*100)/100;
 
