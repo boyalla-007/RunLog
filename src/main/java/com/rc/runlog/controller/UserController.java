@@ -1,8 +1,8 @@
-package com.rc.runlog.Controller;
+package com.rc.runlog.controller;
 
-import com.rc.runlog.Dto.UserRequest;
-import com.rc.runlog.Dto.UserRespone;
-import com.rc.runlog.Service.UserService;
+import com.rc.runlog.dto.UserRequest;
+import com.rc.runlog.dto.UserRespone;
+import com.rc.runlog.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

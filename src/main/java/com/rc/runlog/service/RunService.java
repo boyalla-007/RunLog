@@ -1,13 +1,13 @@
-package com.rc.runlog.Service;
+package com.rc.runlog.service;
 
-import com.rc.runlog.Dto.RunStatsResponse;
-import com.rc.runlog.Repository.UserRepository;
+import com.rc.runlog.dto.RunStatsResponse;
+import com.rc.runlog.repository.UserRepository;
 import com.rc.runlog.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.rc.runlog.Dto.RunRequest;
-import com.rc.runlog.Dto.RunResponse;
-import com.rc.runlog.Repository.RunRepository;
+import com.rc.runlog.dto.RunRequest;
+import com.rc.runlog.dto.RunResponse;
+import com.rc.runlog.repository.RunRepository;
 import com.rc.runlog.exception.RunNotFoundException;
 import com.rc.runlog.model.Run;
 import org.bson.types.ObjectId;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
-import com.rc.runlog.Dto.RunStatsResponse;
 
 @Service
 public class RunService {

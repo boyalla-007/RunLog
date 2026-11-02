@@ -1,7 +1,7 @@
-package com.rc.runlog.Controller;
+package com.rc.runlog.controller;
 
-import com.rc.runlog.Dto.AuthRequest;
-import com.rc.runlog.Dto.AuthResponse;
+import com.rc.runlog.dto.AuthRequest;
+import com.rc.runlog.dto.AuthResponse;
 import com.rc.runlog.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

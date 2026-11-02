@@ -1,8 +1,7 @@
-package com.rc.runlog.Dto;
+package com.rc.runlog.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor

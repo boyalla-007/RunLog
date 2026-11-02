@@ -1,4 +1,4 @@
-package com.rc.runlog.Repository;
+package com.rc.runlog.repository;
 
 
 import com.rc.runlog.model.User;

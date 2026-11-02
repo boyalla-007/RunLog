@@ -1,8 +1,8 @@
-package com.rc.runlog.Service;
+package com.rc.runlog.service;
 
-import com.rc.runlog.Dto.UserRequest;
-import com.rc.runlog.Dto.UserRespone;
-import com.rc.runlog.Repository.UserRepository;
+import com.rc.runlog.dto.UserRequest;
+import com.rc.runlog.dto.UserRespone;
+import com.rc.runlog.repository.UserRepository;
 import com.rc.runlog.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

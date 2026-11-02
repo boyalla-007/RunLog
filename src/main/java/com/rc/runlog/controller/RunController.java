@@ -1,18 +1,15 @@
-package com.rc.runlog.Controller;
+package com.rc.runlog.controller;
 
-import com.rc.runlog.Dto.RunRequest;
-import com.rc.runlog.Dto.RunResponse;
-import com.rc.runlog.Dto.RunStatsResponse;
-import com.rc.runlog.Service.RunService;
-import com.rc.runlog.model.Run;
+import com.rc.runlog.dto.RunRequest;
+import com.rc.runlog.dto.RunResponse;
+import com.rc.runlog.dto.RunStatsResponse;
+import com.rc.runlog.service.RunService;
 import jakarta.validation.Valid;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/runs")

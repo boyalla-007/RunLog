@@ -1,4 +1,4 @@
-package com.rc.runlog.Repository;
+package com.rc.runlog.repository;
 import java.time.LocalDate;
 import java.util.Optional;
 import com.rc.runlog.model.Run;

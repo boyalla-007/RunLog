@@ -1,9 +1,8 @@
 package com.rc.runlog.security;
 
-import com.rc.runlog.Service.CustomUserDetailsService;
+import com.rc.runlog.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

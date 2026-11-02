@@ -1,10 +1,10 @@
 package com.rc.runlog;
 
-import com.rc.runlog.Dto.RunRequest;
-import com.rc.runlog.Dto.RunResponse;
-import com.rc.runlog.Repository.RunRepository;
-import com.rc.runlog.Repository.UserRepository;
-import com.rc.runlog.Service.RunService;
+import com.rc.runlog.dto.RunRequest;
+import com.rc.runlog.dto.RunResponse;
+import com.rc.runlog.repository.RunRepository;
+import com.rc.runlog.repository.UserRepository;
+import com.rc.runlog.service.RunService;
 import com.rc.runlog.exception.RunNotFoundException;
 import com.rc.runlog.model.Run;
 import com.rc.runlog.model.User;
