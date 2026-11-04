@@ -1,6 +1,5 @@
 package com.rc.runlog;
-
-import com.rc.runlog.dto.OpenMeteoResponse;
+import com.rc.runlog.dto.WeatherResponse;
 import com.rc.runlog.service.WeatherService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,10 +17,10 @@ public class RunLogApplication {
     CommandLineRunner testWeather(WeatherService weatherService) {
         return args -> {
 
-            OpenMeteoResponse response = weatherService.getCurrentWeather();
-            System.out.println(response.getCurrent().getTemperature2m());
-            System.out.println(response.getCurrent().getApparentTemperature());
-            System.out.println(response.getCurrent().getWindSpeed10m());
+            WeatherResponse response = weatherService.getCurrentWeather();
+            System.out.println(response.getTemperature());
+            System.out.println(response.getApparentTemperature());
+            System.out.println(response.getWindSpeed());
         };
     }
 }

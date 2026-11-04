@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Document(collection = "runs")
 public class Run {
     @Id
