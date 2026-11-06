@@ -12,15 +12,4 @@ public class RunLogApplication {
     public static void main(String[] args) {
         SpringApplication.run(RunLogApplication.class, args);
     }
-
-    @Bean
-    CommandLineRunner testWeather(WeatherService weatherService) {
-        return args -> {
-
-            WeatherResponse response = weatherService.getCurrentWeather();
-            System.out.println(response.getTemperature());
-            System.out.println(response.getApparentTemperature());
-            System.out.println(response.getWindSpeed());
-        };
-    }
 }

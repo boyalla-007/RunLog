@@ -12,13 +12,13 @@ public class WeatherService {
         this.restClient = restClient;
     }
 
-    public WeatherResponse getCurrentWeather(){
+    public WeatherResponse getCurrentWeather(double latitude, double longitude) {
 
        OpenMeteoResponse response= restClient.get()
                 .uri(uriBuilder ->uriBuilder
                         .path("/v1/forecast")
-                        .queryParam("latitude",13.34)
-                        .queryParam("longitude",74.74)
+                        .queryParam("latitude",latitude)
+                        .queryParam("longitude",longitude)
                         .queryParam("current","temperature_2m,apparent_temperature,wind_speed_10m")
                         .build())
                 .retrieve()
